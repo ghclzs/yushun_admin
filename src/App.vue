@@ -11,7 +11,6 @@
         <AdminReport v-else-if="currentPage === 'report'" />
         <AdminLog v-else-if="currentPage === 'log'" />
         <AdminStats v-else-if="currentPage === 'stats'" />
-        <AdminBackup v-else-if="currentPage === 'backup'" />
       </main>
     </div>
   </div>
@@ -25,11 +24,10 @@ import AdminVerify from "./components/AdminVerify.vue";
 import AdminReport from "./components/AdminReport.vue";
 import AdminLog from "./components/AdminLog.vue";
 import AdminStats from "./components/AdminStats.vue";
-import AdminBackup from "./components/AdminBackup.vue";
 
 export default {
   name: "App",
-  components: { AdminSidebar, AdminHome, AdminUsers, AdminSettings, AdminVerify, AdminReport, AdminLog, AdminStats, AdminBackup },
+  components: { AdminSidebar, AdminHome, AdminUsers, AdminSettings, AdminVerify, AdminReport, AdminLog, AdminStats },
   data() {
     return { currentPage: "verify" };
   }

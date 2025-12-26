@@ -10,7 +10,6 @@
     <ul class="bottom-menu">
       <li :class="{active: current === 'log'}" @click="$emit('navigate','log')">系统日志</li>
       <li :class="{active: current === 'stats'}" @click="$emit('navigate','stats')">数据统计</li>
-      <li :class="{active: current === 'backup'}" @click="$emit('navigate','backup')">备份恢复</li>
     </ul>
   </div>
 </template>
