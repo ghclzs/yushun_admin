@@ -24,7 +24,7 @@
       <div v-if="error" class="error">{{ error }}</div>
     </div>
     <div class="admin-verify-test">
-      <h2>测试环境验证码查询</h2>
+      <h2>测试验证码查询</h2>
       <form @submit.prevent="testSubmitForm">
         <div class="form-group">
           <label for="test-type">类型:</label>
