@@ -23,28 +23,8 @@
       </div>
       <div v-if="error" class="error">{{ error }}</div>
     </div>
-    <div class="admin-verify-test">
-      <h2>测试验证码查询</h2>
-      <form @submit.prevent="testSubmitForm">
-        <div class="form-group">
-          <label for="test-type">类型:</label>
-          <select id="test-type" v-model="testForm.type" required>
-            <option value="edu_c_test">edu_c_test</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label for="test-phone">手机号:</label>
-          <input id="test-phone" type="tel" v-model="testForm.phone" placeholder="请输入手机号" maxlength="11" required />
-        </div>
-        <button type="submit" :disabled="testLoading">查询</button>
-      </form>
-      <div v-if="testResult" class="result">
-        <h3>结果:</h3>
-        <pre>{{ JSON.stringify(testResult, null, 2) }}</pre>
-      </div>
-      <div v-if="testError" class="error">{{ testError }}</div>
-    </div>
   </div>
+
 </template>
 <script>
 import axios from 'axios';
@@ -103,7 +83,7 @@ export default {
         return;
       }
       try {
-        const response = await axios.get('http://8.129.86.105:5000/code/login_code', {
+        const response = await axios.get('http://127.0.0.1:5000/code/login_code', {
           params: {
             phone: this.testForm.phone,
             type: this.testForm.type
