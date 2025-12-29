@@ -1,6 +1,6 @@
 <template>
   <div class="admin-stats">
-    <h2>数据统计</h2>
+    <h2>数据统计111</h2>
     <p>系统数据统计信息。</p>
     <div class="stats-content">
       <div class="stat-item">
