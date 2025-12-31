@@ -42,18 +42,28 @@
       <div class="modal-content" @click.stop>
         <h3>{{ modalType === 'view' ? '查看学生' : modalType === 'edit' ? '编辑学生' : '添加学生' }}</h3>
         <div class="modal-body">
+          <!-- 修复：ID行保留p（无嵌套div），其他行替换为div.form-item -->
           <p v-if="modalType === 'view'"><strong>ID:</strong> {{ modalData.id }}</p>
-          <p><strong><span v-if="modalType !== 'view'" class="required">*</span>姓名:</strong>
+          
+          <!-- 姓名行：p → div.form-item -->
+          <div class="form-item">
+            <strong><span v-if="modalType !== 'view'" class="required">*</span>姓名:</strong>
             <input v-if="modalType !== 'view'" v-model="modalData.name" class="edit-input" :placeholder="modalType !== 'view' ? '必填' : ''" @blur="validateField('name')">
             <span v-else>{{ modalData.name }}</span>
             <div v-if="errors.name" class="error-message">{{ errors.name }}</div>
-          </p>
-          <p><strong><span v-if="modalType !== 'view'" class="required">*</span>年龄:</strong>
+          </div>
+
+          <!-- 年龄行：p → div.form-item -->
+          <div class="form-item">
+            <strong><span v-if="modalType !== 'view'" class="required">*</span>年龄:</strong>
             <input v-if="modalType !== 'view'" v-model="modalData.age" type="number" class="edit-input" :placeholder="modalType !== 'view' ? '必填' : ''" @blur="validateField('age')">
             <span v-else>{{ modalData.age }}</span>
             <div v-if="errors.age" class="error-message">{{ errors.age }}</div>
-          </p>
-          <p><strong><span v-if="modalType !== 'view'" class="required">*</span>性别:</strong>
+          </div>
+
+          <!-- 性别行：p → div.form-item -->
+          <div class="form-item">
+            <strong><span v-if="modalType !== 'view'" class="required">*</span>性别:</strong>
             <select v-if="modalType !== 'view'" v-model="modalData.gender" class="edit-input" @change="validateField('gender')">
               <option value="">请选择性别</option>
               <option value="男">男</option>
@@ -61,16 +71,22 @@
             </select>
             <span v-else>{{ modalData.gender }}</span>
             <div v-if="errors.gender" class="error-message">{{ errors.gender }}</div>
-          </p>
-          <p><strong><span v-if="modalType !== 'view'" class="required">*</span>班级:</strong>
+          </div>
+
+          <!-- 班级行：p → div.form-item -->
+          <div class="form-item">
+            <strong><span v-if="modalType !== 'view'" class="required">*</span>班级:</strong>
             <input v-if="modalType !== 'view'" v-model="modalData.class_name" class="edit-input" :placeholder="modalType !== 'view' ? '必填' : ''" @blur="validateField('class_name')">
             <span v-else>{{ modalData.class_name }}</span>
             <div v-if="errors.class_name" class="error-message">{{ errors.class_name }}</div>
-          </p>
-          <p><strong>入学日期:</strong> 
+          </div>
+
+          <!-- 入学日期行：p → div.form-item（无嵌套div，但统一风格） -->
+          <div class="form-item">
+            <strong>入学日期:</strong> 
             <input v-if="modalType !== 'view'" v-model="modalData.admission_date" type="date" class="edit-input">
             <span v-else>{{ modalData.admission_date }}</span>
-          </p>
+          </div>
         </div>
         <div class="modal-footer">
           <button @click="closeModal" class="btn btn-secondary">关闭</button>
@@ -86,6 +102,7 @@
     </div>
   </div>
 </template>
+
 <script>
 import axios from 'axios';
 
@@ -130,6 +147,7 @@ export default {
         }
       } catch (error) {
         // 处理错误
+        this.showToastMessage('获取学生列表失败', 'error');
       }
     },
     prevPage() {
@@ -146,6 +164,8 @@ export default {
       const page = parseInt(this.targetPage);
       if (page >= 1 && page <= this.totalPages) {
         this.fetchStudents(page);
+      } else {
+        this.showToastMessage('页码超出范围', 'error');
       }
     },
     viewStudent(student) {
@@ -235,6 +255,9 @@ export default {
       if (!this.modalData.age || this.modalData.age === '') {
         this.$set(this.errors, 'age', '年龄不能为空');
         hasError = true;
+      } else if (parseInt(this.modalData.age) <= 0 || parseInt(this.modalData.age) > 150) {
+        this.$set(this.errors, 'age', '年龄必须是大于0且小于150的整数');
+        hasError = true;
       }
       if (!this.modalData.gender || this.modalData.gender === '') {
         this.$set(this.errors, 'gender', '性别不能为空');
@@ -271,7 +294,7 @@ export default {
           this.showToastMessage('更新失败: ' + response.data.msg, 'error');
         }
       } catch (error) {
-        this.showToastMessage('更新失败', 'error');
+        this.showToastMessage('更新失败：网络异常', 'error');
       }
     },
     async createStudent() {
@@ -289,6 +312,9 @@ export default {
       }
       if (!this.modalData.age || this.modalData.age === '') {
         this.$set(this.errors, 'age', '年龄不能为空');
+        hasError = true;
+      } else if (parseInt(this.modalData.age) <= 0 || parseInt(this.modalData.age) > 150) {
+        this.$set(this.errors, 'age', '年龄必须是大于0且小于150的整数');
         hasError = true;
       }
       if (!this.modalData.gender || this.modalData.gender === '') {
@@ -323,13 +349,22 @@ export default {
           this.showToastMessage('添加失败: ' + response.data.msg, 'error');
         }
       } catch (error) {
-        this.showToastMessage('添加失败', 'error');
+        this.showToastMessage('添加失败：网络异常', 'error');
       }
     },
-    deleteStudent(student) {
+    async deleteStudent(student) {
       if (confirm(`确定删除学生: ${student.name}?`)) {
-        // 这里可以调用删除 API
-        alert(`删除学生: ${student.name}`);
+        try {
+          const response = await axios.post('http://8.129.86.105:5000/student/delete', { stu_id: student.id });
+          if (response.data.code === 200) {
+            this.showToastMessage('删除成功', 'success');
+            this.fetchStudents(this.page);
+          } else {
+            this.showToastMessage('删除失败: ' + response.data.msg, 'error');
+          }
+        } catch (error) {
+          this.showToastMessage('删除失败：网络异常', 'error');
+        }
       }
     },
     resetErrors() {
@@ -345,10 +380,10 @@ export default {
       this.toastType = type;
       this.showToast = true;
 
-      // 1秒后自动隐藏toast
+      // 3秒后自动隐藏toast（原1秒太短，调整为3秒更友好）
       setTimeout(() => {
         this.showToast = false;
-      }, 1000);
+      }, 3000);
     },
     validateField(fieldName) {
       this.$nextTick(() => {
@@ -365,6 +400,8 @@ export default {
           case 'age':
             if (!this.modalData.age || this.modalData.age === '') {
               this.$set(this.errors, 'age', '年龄不能为空');
+            } else if (parseInt(this.modalData.age) <= 0 || parseInt(this.modalData.age) > 150) {
+              this.$set(this.errors, 'age', '年龄必须是大于0且小于150的整数');
             } else {
               this.$set(this.errors, 'age', '');
             }
@@ -389,6 +426,7 @@ export default {
   }
 };
 </script>
+
 <style scoped>
 .admin-stats {
   padding: 20px;
@@ -514,7 +552,8 @@ export default {
   width: 90%;
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
 }
-.modal-body p {
+/* 新增form-item样式，模拟原p标签的margin */
+.modal-body .form-item {
   margin: 10px 0;
 }
 .edit-input {
@@ -524,18 +563,15 @@ export default {
   border-radius: 4px;
   margin-top: 4px;
 }
-
 .required {
   color: red;
   margin-right: 4px;
 }
-
 .error-message {
   color: red;
   font-size: 12px;
   margin-top: 4px;
 }
-
 .modal-footer {
   text-align: right;
   margin-top: 20px;
@@ -565,9 +601,9 @@ export default {
 /* Toast 通知样式 */
 .toast {
   position: fixed;
-  top: 50%;
+  top: 20px; /* 从中间改到顶部，更符合用户习惯 */
   left: 50%;
-  transform: translate(-50%, -50%);
+  transform: translateX(-50%);
   padding: 15px 25px;
   border-radius: 4px;
   color: white;
@@ -578,26 +614,22 @@ export default {
   min-width: 200px;
   text-align: center;
 }
-
 .toast.success {
   background-color: #28a745;
 }
-
 .toast.error {
   background-color: #dc3545;
 }
-
 @keyframes slideIn {
   from {
-    transform: translate(-50%, -40%);
+    transform: translateX(-50%) translateY(-20px);
     opacity: 0;
   }
   to {
-    transform: translate(-50%, -50%);
+    transform: translateX(-50%) translateY(0);
     opacity: 1;
   }
 }
-
 @keyframes fadeOut {
   from {
     opacity: 1;
