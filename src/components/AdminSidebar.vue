@@ -2,7 +2,7 @@
   <div class="admin-sidebar">
     <ul>
       <li :class="{active: current === 'verify'}" @click="$emit('navigate','verify')">验证码查询</li>
-      <li :class="{active: current === 'report'}" @click="$emit('navigate','report')">测试报告</li>
+      <li :class="{active: current === 'report'}" @click="$emit('navigate','report')">Allure测试报告</li>
       <li :class="{active: current === 'home'}" @click="$emit('navigate','home')">jenkins</li>
       <li :class="{active: current === 'users'}" @click="$emit('navigate','users')">用户管理</li>
       <li :class="{active: current === 'settings'}" @click="$emit('navigate','settings')">设置</li>
