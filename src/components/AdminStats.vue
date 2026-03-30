@@ -1,104 +1,43 @@
 <template>
   <div class="admin-stats">
-    <h2>学生列表</h2>
-    <button @click="addStudent" class="action-btn add-btn">添加学生</button>
-    <table class="student-table">
-      <thead>
-        <tr>
-          <th>ID</th>
-          <th>姓名</th>
-          <th>年龄</th>
-          <th>性别</th>
-          <th>班级</th>
-          <th>入学日期</th>
-          <th>操作</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr v-for="student in students" :key="student.id">
-          <td>{{ student.id }}</td>
-          <td>{{ student.name }}</td>
-          <td>{{ student.age }}</td>
-          <td>{{ student.gender }}</td>
-          <td>{{ student.class_name }}</td>
-          <td>{{ student.admission_date || '无' }}</td>
-          <td>
-            <button @click="viewStudent(student)" class="action-btn view-btn">查看</button>
-            <button @click="editStudent(student)" class="action-btn edit-btn">编辑</button>
-            <button @click="deleteStudent(student)" class="action-btn delete-btn">删除</button>
-          </td>
-        </tr>
-      </tbody>
-    </table>
-    <div class="pagination">
-      <button @click="prevPage" :disabled="page <= 1">上一页</button>
-      <span>第 {{ page }} 页 / 共 {{ totalPages }} 页</span>
-      <button @click="nextPage" :disabled="page >= totalPages">下一页</button>
-      <input type="number" v-model="targetPage" min="1" :max="totalPages" placeholder="页码">
-      <button @click="goToPage">跳转</button>
-    </div>
-    <!-- 模态框 -->
-    <div v-if="showModal" class="modal-overlay" @click="closeModal">
-      <div class="modal-content" @click.stop>
-        <h3>{{ modalType === 'view' ? '查看学生' : modalType === 'edit' ? '编辑学生' : '添加学生' }}</h3>
-        <div class="modal-body">
-          <!-- 修复：ID行保留p（无嵌套div），其他行替换为div.form-item -->
-          <p v-if="modalType === 'view'"><strong>ID:</strong> {{ modalData.id }}</p>
-          
-          <!-- 姓名行：p → div.form-item -->
-          <div class="form-item">
-            <strong><span v-if="modalType !== 'view'" class="required">*</span>姓名:</strong>
-            <input v-if="modalType !== 'view'" v-model="modalData.name" class="edit-input" :placeholder="modalType !== 'view' ? '必填' : ''" @blur="validateField('name')">
-            <span v-else>{{ modalData.name }}</span>
-            <div v-if="errors.name" class="error-message">{{ errors.name }}</div>
-          </div>
-
-          <!-- 年龄行：p → div.form-item -->
-          <div class="form-item">
-            <strong><span v-if="modalType !== 'view'" class="required">*</span>年龄:</strong>
-            <input v-if="modalType !== 'view'" v-model="modalData.age" type="number" class="edit-input" :placeholder="modalType !== 'view' ? '必填' : ''" @blur="validateField('age')">
-            <span v-else>{{ modalData.age }}</span>
-            <div v-if="errors.age" class="error-message">{{ errors.age }}</div>
-          </div>
-
-          <!-- 性别行：p → div.form-item -->
-          <div class="form-item">
-            <strong><span v-if="modalType !== 'view'" class="required">*</span>性别:</strong>
-            <select v-if="modalType !== 'view'" v-model="modalData.gender" class="edit-input" @change="validateField('gender')">
-              <option value="">请选择性别</option>
-              <option value="男">男</option>
-              <option value="女">女</option>
-            </select>
-            <span v-else>{{ modalData.gender }}</span>
-            <div v-if="errors.gender" class="error-message">{{ errors.gender }}</div>
-          </div>
-
-          <!-- 班级行：p → div.form-item -->
-          <div class="form-item">
-            <strong><span v-if="modalType !== 'view'" class="required">*</span>班级:</strong>
-            <input v-if="modalType !== 'view'" v-model="modalData.class_name" class="edit-input" :placeholder="modalType !== 'view' ? '必填' : ''" @blur="validateField('class_name')">
-            <span v-else>{{ modalData.class_name }}</span>
-            <div v-if="errors.class_name" class="error-message">{{ errors.class_name }}</div>
-          </div>
-
-          <!-- 入学日期行：p → div.form-item（无嵌套div，但统一风格） -->
-          <div class="form-item">
-            <strong>入学日期:</strong> 
-            <input v-if="modalType !== 'view'" v-model="modalData.admission_date" type="date" class="edit-input">
-            <span v-else>{{ modalData.admission_date }}</span>
-          </div>
-        </div>
-        <div class="modal-footer">
-          <button @click="closeModal" class="btn btn-secondary">关闭</button>
-          <button v-if="modalType === 'add'" @click="createStudent" class="btn btn-primary">添加</button>
-          <button v-if="modalType === 'edit'" @click="saveEdit" class="btn btn-primary">保存</button>
-        </div>
+    <div>
+      <h2>学生列表</h2>
+      <button @click="addStudent" class="action-btn add-btn">添加学生</button>
+      <table class="student-table">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>姓名</th>
+            <th>年龄</th>
+            <th>性别</th>
+            <th>班级</th>
+            <th>入学日期</th>
+            <th>操作</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="student in students" :key="student.id">
+            <td>{{ student.id }}</td>
+            <td>{{ student.name }}</td>
+            <td>{{ student.age }}</td>
+            <td>{{ student.gender }}</td>
+            <td>{{ student.class_name }}</td>
+            <td>{{ student.admission_date || '无' }}</td>
+            <td>
+              <button @click="viewStudent(student)" class="action-btn view-btn">查看</button>
+              <button @click="editStudent(student)" class="action-btn edit-btn">编辑</button>
+              <button @click="deleteStudent(student)" class="action-btn delete-btn">删除</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="pagination">
+        <button @click="prevPage" :disabled="page <= 1">上一页</button>
+        <span>第 {{ page }} 页 / 共 {{ totalPages }} 页</span>
+        <button @click="nextPage" :disabled="page >= totalPages">下一页</button>
+        <input type="number" v-model="targetPage" min="1" :max="totalPages" placeholder="页码">
+        <button @click="goToPage">跳转</button>
       </div>
-    </div>
-
-    <!-- Toast 通知 -->
-    <div v-if="showToast" class="toast" :class="toastType">
-      {{ toastMessage }}
     </div>
   </div>
 </template>
@@ -463,7 +402,7 @@ export default {
   border-radius: 4px;
   cursor: pointer;
   font-size: 12px;
-  transition: background-color 0.3s;
+  transition: background-color 0.3s, transform 0.2s;
 }
 .add-btn {
   background-color: #17a2b8;
